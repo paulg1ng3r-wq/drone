@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DJI Mini 4K Leerapp</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .nav-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .nav-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .nav-btn:hover:not(.active) {
+            background: #e0e0e0;
+            transform: translateY(-1px);
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .spec-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .spec-item {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 12px;
+            color: white;
+        }
+
+        .spec-item h3 {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .spec-item p {
+            font-size: 1.3em;
+            font-weight: 700;
+        }
+
+        .mission-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .mission {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 5px solid #667eea;
+        }
+
+        .mission:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .mission.completed {
+            border-left-color: #10b981;
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+        }
+
+        .mission-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .mission-title {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .difficulty {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .difficulty.easy { background: #86efac; color: #065f46; }
+        .difficulty.medium { background: #fcd34d; color: #78350f; }
+        .difficulty.hard { background: #fca5a5; color: #7f1d1d; }
+
+        .mission-desc {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .mission-details {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .mission.expanded .mission-details {
+            display: block;
+        }
+
+        .tips {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            border-left: 4px solid #ffc107;
+        }
+
+        .tips h4 {
+            color: #856404;
+            margin-bottom: 8px;
+        }
+
+        .tips ul {
+            margin-left: 20px;
+            color: #856404;
+        }
+
+        .complete-btn {
+            margin-top: 15px;
+            padding: 12px 24px;
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .complete-btn:hover {
+            background: #059669;
+            transform: scale(1.05);
+        }
+
+        .complete-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: scale(1);
+        }
+
+        .progress-bar {
+            background: rgba(255,255,255,0.3);
+            border-radius: 10px;
+            padding: 5px;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            background: white;
+            height: 20px;
+            border-radius: 8px;
+            transition: width 0.5s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #667eea;
+            font-weight: 700;
+            font-size: 0.9em;
+        }
+
+        .info-section {
+            margin-bottom: 25px;
+        }
+
+        .info-section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .info-section p {
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin-top: 15px;
+        }
+
+        .feature-list li {
+            padding: 12px;
+            background: #f8f9fa;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            padding-left: 40px;
+            position: relative;
+        }
+
+        .feature-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 15px;
+            color: #10b981;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .safety-warning {
+            background: #fee2e2;
+            border-left: 4px solid #dc2626;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .safety-warning h3 {
+            color: #991b1b;
+            margin-bottom: 10px;
+        }
+
+        .safety-warning ul {
+            margin-left: 20px;
+            color: #7f1d1d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚁 DJI Mini 4K</h1>
+            <p>Leer je drone kennen met praktische opdrachten</p>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar" style="width: 0%">0%</div>
+        </div>
+
+        <div class="card">
+            <div class="nav-buttons">
+                <button class="nav-btn active" onclick="showSection('specs')">Specificaties</button>
+                <button class="nav-btn" onclick="showSection('guide')">Snelgids</button>
+                <button class="nav-btn" onclick="showSection('missions')">Opdrachten</button>
+            </div>
+
+            <!-- Specificaties Sectie -->
+            <div id="specs" class="section active">
+                <div class="info-section">
+                    <h2>Over de DJI Mini 4K</h2>
+                    <p>De DJI Mini 4K is een compacte en lichtgewicht drone die perfect is voor beginners en hobbyisten. Met een gewicht van minder dan 249 gram hoef je hem in veel landen niet te registreren.</p>
+                </div>
+
+                <div class="spec-grid">
+                    <div class="spec-item">
+                        <h3>Gewicht</h3>
+                        <p>< 249g</p>
+                    </div>
+                    <div class="spec-item">
+                        <h3>Camera</h3>
+                        <p>4K/30fps</p>
+                    </div>
+                    <div class="spec-item">
+                        <h3>Vliegtijd</h3>
+                        <p>31 min</p>
+                    </div>
+                    <div class="spec-item">
+                        <h3>Bereik</h3>
+                        <p>10 km</p>
+                    </div>
+                    <div class="spec-item">
+                        <h3>Max snelheid</h3>
+                        <p>16 m/s</p>
+                    </div>
+                    <div class="spec-item">
+                        <h3>Wind weerstand</h3>
+                        <p>10.7 m/s</p>
+                    </div>
+                </div>
+
+                <div class="info-section" style="margin-top: 30px;">
+                    <h2>Belangrijkste Features</h2>
+                    <ul class="feature-list">
+                        <li>4K video opname met 30fps</li>
+                        <li>3-assige gimbal voor stabiele beelden</li>
+                        <li>QuickShots voor automatische cinematische shots</li>
+                        <li>Return to Home functie</li>
+                        <li>GPS positionering</li>
+                        <li>Downward vision sensors</li>
+                        <li>DJI Fly app met intuïtieve bediening</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Snelgids Sectie -->
+            <div id="guide" class="section">
+                <div class="info-section">
+                    <h2>📱 Eerste Keer Opstarten</h2>
+                    <p><strong>1. Laad de batterij op</strong><br>
+                    Laad de accu volledig op voordat je gaat vliegen. Dit duurt ongeveer 90 minuten.</p>
+                    
+                    <p><strong>2. Download de DJI Fly app</strong><br>
+                    Download de app op je smartphone (iOS of Android) en maak een DJI account aan.</p>
+                    
+                    <p><strong>3. Bevestig de propellers</strong><br>
+                    Match de propellers met de juiste motoren (met of zonder markering) en druk ze vast terwijl je draait.</p>
+                    
+                    <p><strong>4. Verbind je controller</strong><br>
+                    Zet de drone aan, dan de controller. Koppel je telefoon via de kabel en open DJI Fly.</p>
+                    
+                    <p><strong>5. Activeer de drone</strong><br>
+                    Volg de instructies in de app om je drone te activeren en te kalibreren.</p>
+                </div>
+
+                <div class="safety-warning">
+                    <h3>⚠️ Veiligheid Eerst!</h3>
+                    <ul>
+                        <li>Vlieg alleen op toegestane locaties</li>
+                        <li>Blijf binnen visueel bereik (VLOS)</li>
+                        <li>Vlieg niet boven mensen of dieren</li>
+                        <li>Check de weersverwachting (niet bij harde wind of regen)</li>
+                        <li>Controleer lokale drone regelgeving</li>
+                        <li>Houd minimaal 150m afstand van gebouwen in stedelijk gebied</li>
+                    </ul>
+                </div>
+
+                <div class="info-section">
+                    <h2>🎮 Controller Basisbediening</h2>
+                    <p><strong>Linker stick:</strong></p>
+                    <ul style="margin-left: 20px; margin-bottom: 15px;">
+                        <li>Omhoog/Omlaag: Hoogte (throttle)</li>
+                        <li>Links/Rechts: Roteren (yaw)</li>
+                    </ul>
+                    
+                    <p><strong>Rechter stick:</strong></p>
+                    <ul style="margin-left: 20px; margin-bottom: 15px;">
+                        <li>Omhoog/Omlaag: Vooruit/Achteruit (pitch)</li>
+                        <li>Links/Rechts: Zijwaarts bewegen (roll)</li>
+                    </ul>
+
+                    <p><strong>Belangrijke knoppen:</strong></p>
+                    <ul style="margin-left: 20px;">
+                        <li><strong>RTH knop:</strong> Return to Home (automatisch terugkeren)</li>
+                        <li><strong>Pause knop:</strong> Drone stopt en blijft zweven</li>
+                        <li><strong>Camera knop:</strong> Foto/video opnemen</li>
+                    </ul>
+                </div>
+
+                <div class="tips">
+                    <h4>💡 Pro Tips voor Beginners</h4>
+                    <ul>
+                        <li>Begin in een open ruimte zonder obstakels</li>
+                        <li>Oefen eerst met opstijgen, zweven en landen</li>
+                        <li>Gebruik de beginner mode in de app (beperkt bereik en snelheid)</li>
+                        <li>Maak altijd een pre-flight checklist</li>
+                        <li>Vlieg bij daglicht voor betere zichtbaarheid</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Opdrachten Sectie -->
+            <div id="missions" class="section">
+                <div class="info-section">
+                    <h2>🎯 Leeropdrachtjes</h2>
+                    <p>Voltooi deze opdrachten om stap voor stap je drone te leren kennen. Klik op een opdracht voor meer details!</p>
+                </div>
+
+                <div class="mission-list" id="missionList">
+                    <!-- Missions will be added by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const missions = [
+            {
+                id: 1,
+                title: "Pre-flight Check",
+                difficulty: "easy",
+                description: "Leer de basis controles voordat je gaat vliegen",
+                details: "Controleer voor elke vlucht de volgende punten:",
+                steps: [
+                    "Batterij is minimaal 50% opgeladen",
+                    "Propellers zijn stevig bevestigd en onbeschadigd",
+                    "Camera lens is schoon",
+                    "Gimbal bescherming is verwijderd",
+                    "SD kaart is geplaatst",
+                    "GPS signaal is sterk (10+ satellieten)",
+                    "Vlieggebied is toegestaan (check DJI Fly app)"
+                ],
+                tips: [
+                    "Maak een checklist op je telefoon",
+                    "Neem altijd een reservebatterij mee",
+                    "Check het weer vooraf (max wind 8 m/s)"
+                ]
+            },
+            {
+                id: 2,
+                title: "Eerste Vlucht: Opstijgen en Landen",
+                difficulty: "easy",
+                description: "Oefen met de basisbewegingen in een veilige omgeving",
+                details: "In deze opdracht leer je de drone veilig opstijgen en landen.",
+                steps: [
+                    "Zoek een open ruimte van minstens 5x5 meter",
+                    "Plaats de drone op vlakke grond",
+                    "Start de DJI Fly app en wacht op GPS signaal",
+                    "Druk op de automatische take-off knop",
+                    "Laat de drone 1,5 meter zweven",
+                    "Gebruik de auto-land knop om te landen",
+                    "Herhaal 3x voor vertrouwen"
+                ],
+                tips: [
+                    "Begin met automatische take-off/landing",
+                    "Blijf kalm als de drone beweegt door wind",
+                    "Gebruik de beginner mode (settings in app)"
+                ]
+            },
+            {
+                id: 3,
+                title: "Basis Controle: Het Vierkant",
+                difficulty: "easy",
+                description: "Vlieg een vierkant om vooruit, achteruit en zijwaarts te oefenen",
+                details: "Leer de sticks beheersen door een vierkant te vliegen.",
+                steps: [
+                    "Laat de drone opstijgen naar 2 meter hoogte",
+                    "Vlieg 5 meter rechtdoor (rechter stick omhoog)",
+                    "Vlieg 5 meter naar rechts (rechter stick rechts)",
+                    "Vlieg 5 meter achteruit (rechter stick omlaag)",
+                    "Vlieg 5 meter naar links (rechter stick links)",
+                    "Land de drone op de startpositie"
+                ],
+                tips: [
+                    "Kleine bewegingen van de stick zijn genoeg",
+                    "Let op de richting waarin de drone kijkt",
+                    "Gebruik markers op de grond voor afstand"
+                ]
+            },
+            {
+                id: 4,
+                title: "Rotatie en Oriëntatie",
+                difficulty: "medium",
+                description: "Leer roteren en vlieg terwijl de drone in verschillende richtingen kijkt",
+                details: "Oefen met de yaw (rotatie) en leer vliegen vanuit verschillende oriëntaties.",
+                steps: [
+                    "Laat de drone opstijgen en zweven",
+                    "Roteer 90° naar rechts (linker stick rechts)",
+                    "Vlieg vooruit vanuit deze positie",
+                    "Roteer weer 90° naar rechts",
+                    "Herhaal tot je een volledige cirkel hebt gemaakt",
+                    "Oefen ook met roteren terwijl je vliegt"
+                ],
+                tips: [
+                    "Dit is de moeilijkste basis skill - wees geduldig",
+                    "Begin met kleine rotaties",
+                    "Kijk naar de LED lichten om de voorkant te herkennen"
+                ]
+            },
+            {
+                id: 5,
+                title: "Hoogte Controle",
+                difficulty: "easy",
+                description: "Oefen met verschillende hoogtes en stabiel zweven",
+                details: "Leer nauwkeurig de hoogte te controleren.",
+                steps: [
+                    "Stijg naar 1 meter en zweef 10 seconden",
+                    "Stijg naar 3 meter en zweef 10 seconden",
+                    "Stijg naar 5 meter en zweef 10 seconden",
+                    "Daal langzaam terug naar 3 meter",
+                    "Daal naar 1 meter",
+                    "Land de drone"
+                ],
+                tips: [
+                    "Gebruik kleine bewegingen van de linker stick",
+                    "De drone zal automatisch de hoogte behouden",
+                    "Oefen ook met dalen - dit is moeilijker dan stijgen"
+                ]
+            },
+            {
+                id: 6,
+                title: "Return to Home Test",
+                difficulty: "medium",
+                description: "Test de RTH functie op korte afstand",
+                details: "Leer de belangrijke Return to Home functie gebruiken.",
+                steps: [
+                    "Zet de RTH hoogte op 30 meter (in settings)",
+                    "Laat de drone opstijgen en wacht op GPS lock",
+                    "Vlieg 20 meter bij jezelf vandaan",
+                    "Druk op de RTH knop",
+                    "Observeer hoe de drone terug komt",
+                    "Annuleer RTH en land handmatig"
+                ],
+                tips: [
+                    "Zorg voor minstens 10 GPS satellieten",
+                    "RTH hoogte moet hoger zijn dan obstakels",
+                    "Je kunt RTH altijd annuleren met de pause knop"
+                ]
+            },
+            {
+                id: 7,
+                title: "Camera Basics",
+                difficulty: "easy",
+                description: "Leer foto's en video's maken tijdens het vliegen",
+                details: "Verken de camera functionaliteit van je drone.",
+                steps: [
+                    "Laat de drone zweven op 3 meter",
+                    "Maak 3 foto's met verschillende gimbal hoeken",
+                    "Start een video opname",
+                    "Vlieg langzaam vooruit terwijl je filmt",
+                    "Stop de opname",
+                    "Bekijk je opnames in de DJI Fly app"
+                ],
+                tips: [
+                    "Gebruik de gimbal wiel voor soepele camera bewegingen",
+                    "Vlieg langzaam voor stabiele video's",
+                    "Film in 4K voor de beste kwaliteit"
+                ]
+            },
+            {
+                id: 8,
+                title: "QuickShots Ontdekken",
+                difficulty: "medium",
+                description: "Probeer de automatische QuickShot modi",
+                details: "Leer de intelligente vliegmodi gebruiken voor cinematische shots.",
+                steps: [
+                    "Zoek een interessant onderwerp (boom, gebouw)",
+                    "Open QuickShots in de DJI Fly app",
+                    "Probeer 'Dronie' (achteruit omhoog vliegen)",
+                    "Probeer 'Circle' (om onderwerp heen vliegen)",
+                    "Probeer 'Helix' (spiraal omhoog)",
+                    "Bekijk de automatisch gegenereerde video"
+                ],
+                tips: [
+                    "Zorg voor genoeg vrije ruimte rondom",
+                    "De drone vliegt automatisch - houd afstand",
+                    "QuickShots worden automatisch als video opgeslagen"
+                ]
+            },
+            {
+                id: 9,
+                title: "Wind Controle",
+                difficulty: "hard",
+                description: "Leer vliegen bij lichte wind (max 5 m/s)",
+                details: "Ontwikkel gevoel voor compenseren bij wind.",
+                steps: [
+                    "Check windsnelheid in DJI Fly app",
+                    "Laat de drone opstijgen bij lichte wind",
+                    "Vlieg tegen de wind in (zwaarder)",
+                    "Vlieg met de wind mee (lichter)",
+                    "Oefen zweven op een vaste positie",
+                    "Observeer hoe de drone automatisch compenseert"
+                ],
+                tips: [
+                    "Begin bij wind van 3-5 m/s, niet meer!",
+                    "De drone compenseert automatisch, maar verbruikt meer batterij",
+                    "Land direct bij wind waarschuwingen in de app"
+                ]
+            },
+            {
+                id: 10,
+                title: "Lange Afstand Vlucht",
+                difficulty: "hard",
+                description: "Vlieg verder weg en oefen met visueel contact",
+                details: "Test je skills op grotere afstand (blijf binnen VLOS!).",
+                steps: [
+                    "Zoek een groot open veld",
+                    "Vlieg 50 meter rechtdoor",
+                    "Oefen met oriëntatie op afstand",
+                    "Vlieg een cirkel op 50 meter afstand",
+                    "Gebruik RTH om terug te komen",
+                    "Herhaal op 75 meter afstand"
+                ],
+                tips: [
+                    "Blijf ALTIJD binnen visueel bereik",
+                    "Houd batterijniveau in de gaten (min 30% voor terugvlucht)",
+                    "Bij verbindingsverlies keert drone automatisch terug"
+                ]
+            }
+        ];
+
+        let completedMissions = JSON.parse(localStorage.getItem('completedMissions')) || [];
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function renderMissions() {
+            const missionList = document.getElementById('missionList');
+            missionList.innerHTML = '';
+
+            missions.forEach(mission => {
+                const isCompleted = completedMissions.includes(mission.id);
+                const missionDiv = document.createElement('div');
+                missionDiv.className = `mission ${isCompleted ? 'completed' : ''}`;
+                
+                missionDiv.innerHTML = `
+                    <div class="mission-header">
+                        <div class="mission-title">${mission.title} ${isCompleted ? '✓' : ''}</div>
+                        <div class="difficulty ${mission.difficulty}">${
+                            mission.difficulty === 'easy' ? 'Makkelijk' :
+                            mission.difficulty === 'medium' ? 'Gemiddeld' : 'Uitdagend'
+                        }</div>
+                    </div>
+                    <div class="mission-desc">${mission.description}</div>
+                    <div class="mission-details">
+                        <p><strong>${mission.details}</strong></p>
+                        <ul style="margin: 15px 0 15px 20px; line-height: 1.8;">
+                            ${mission.steps.map(step => `<li>${step}</li>`).join('')}
+                        </ul>
+                        <div class="tips">
+                            <h4>💡 Tips</h4>
+                            <ul>
+                                ${mission.tips.map(tip => `<li>${tip}</li>`).join('')}
+                            </ul>
+                        </div>
+                        ${!isCompleted ? `<button class="complete-btn" onclick="completeMission(${mission.id})">Markeer als voltooid ✓</button>` : ''}
+                    </div>
+                `;
+
+                missionDiv.addEventListener('click', (e) => {
+                    if (!e.target.classList.contains('complete-btn')) {
+                        missionDiv.classList.toggle('expanded');
+                    }
+                });
+
+                missionList.appendChild(missionDiv);
+            });
+
+            updateProgress();
+        }
+
+        function completeMission(missionId) {
+            if (!completedMissions.includes(missionId)) {
+                completedMissions.push(missionId);
+                localStorage.setItem('completedMissions', JSON.stringify(completedMissions));
+                renderMissions();
+            }
+        }
+
+        function updateProgress() {
+            const progress = (completedMissions.length / missions.length) * 100;
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = progress + '%';
+            progressBar.textContent = Math.round(progress) + '%';
+        }
+
+        // Initialize
+        renderMissions();
+    </script>
+</body>
+</html>
