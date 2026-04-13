@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DJI Mini 4K - 5 Minuten Crash Course</title>
+    <title>DJI Mini 4K - Leer App</title>
     <style>
         * {
             margin: 0;
@@ -16,7 +16,6 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
-            overflow-x: hidden;
         }
 
         .container {
@@ -31,20 +30,65 @@
         }
 
         .header h1 {
-            font-size: 2em;
+            font-size: 2.2em;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .menu {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .menu-item {
+            background: white;
+            border-radius: 20px;
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .menu-item:active {
+            transform: scale(0.95);
+        }
+
+        .menu-item .icon {
+            font-size: 3.5em;
             margin-bottom: 10px;
         }
 
-        .timer {
-            background: rgba(255,255,255,0.2);
-            padding: 15px;
-            border-radius: 15px;
-            text-align: center;
-            color: white;
-            font-size: 2.5em;
-            font-weight: bold;
-            margin-bottom: 20px;
-            font-family: 'Courier New', monospace;
+        .menu-item .title {
+            font-size: 1.1em;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .detail-view {
+            display: none;
+            animation: slideIn 0.3s;
+        }
+
+        .detail-view.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .card {
@@ -52,79 +96,63 @@
             border-radius: 20px;
             padding: 30px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            margin-bottom: 20px;
-            position: relative;
         }
 
-        .step-counter {
-            position: absolute;
-            top: -15px;
-            left: 20px;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        .back-btn {
+            background: rgba(255,255,255,0.2);
             color: white;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5em;
-            font-weight: bold;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-
-        .step-title {
-            font-size: 1.8em;
-            color: #333;
-            margin-bottom: 15px;
-            padding-top: 10px;
-        }
-
-        .step-desc {
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
             font-size: 1.1em;
-            color: #666;
-            line-height: 1.6;
+            font-weight: 600;
+            cursor: pointer;
             margin-bottom: 20px;
+            transition: all 0.3s;
         }
 
-        .visual {
+        .back-btn:active {
+            transform: scale(0.95);
+        }
+
+        .detail-title {
+            font-size: 2em;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .visual-box {
             background: #f8f9fa;
             border-radius: 15px;
             padding: 30px;
             margin: 20px 0;
-            position: relative;
-        }
-
-        .controller {
-            width: 100%;
-            max-width: 400px;
-            margin: 0 auto;
-            position: relative;
         }
 
         .controller-body {
             background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
             border-radius: 30px;
             padding: 40px 30px;
-            position: relative;
+            max-width: 350px;
+            margin: 0 auto;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
         .stick-area {
             display: flex;
             justify-content: space-between;
-            gap: 40px;
+            gap: 30px;
             margin-bottom: 30px;
         }
 
         .stick {
             flex: 1;
-            position: relative;
+            text-align: center;
         }
 
         .stick-base {
-            width: 80px;
-            height: 80px;
+            width: 70px;
+            height: 70px;
             background: #1a1a1a;
             border-radius: 50%;
             margin: 0 auto;
@@ -133,8 +161,8 @@
         }
 
         .stick-knob {
-            width: 40px;
-            height: 40px;
+            width: 35px;
+            height: 35px;
             background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
             border-radius: 50%;
             position: absolute;
@@ -145,17 +173,22 @@
         }
 
         .stick-label {
-            text-align: center;
             color: white;
-            font-size: 0.9em;
-            margin-top: 10px;
+            font-size: 0.75em;
+            margin-top: 8px;
             font-weight: 600;
+        }
+
+        .stick-desc {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.7em;
+            margin-top: 5px;
+            line-height: 1.4;
         }
 
         .arrow {
             position: absolute;
-            font-size: 2em;
-            color: #4ecdc4;
+            font-size: 1.8em;
             animation: pulse 1.5s infinite;
         }
 
@@ -164,25 +197,43 @@
             50% { opacity: 1; transform: scale(1.2); }
         }
 
-        .arrow.up { top: -25px; left: 50%; transform: translateX(-50%); }
-        .arrow.down { bottom: -25px; left: 50%; transform: translateX(-50%); }
-        .arrow.left { left: -25px; top: 50%; transform: translateY(-50%); }
-        .arrow.right { right: -25px; top: 50%; transform: translateY(-50%); }
+        .arrow.up { 
+            top: -20px; 
+            left: 50%; 
+            transform: translateX(-50%);
+        }
+        .arrow.down { 
+            bottom: -20px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+        }
+        .arrow.left { 
+            left: -20px; 
+            top: 50%; 
+            transform: translateY(-50%); 
+        }
+        .arrow.right { 
+            right: -20px; 
+            top: 50%; 
+            transform: translateY(-50%); 
+        }
 
         .buttons-area {
             display: flex;
             justify-content: space-around;
-            margin-top: 20px;
+            gap: 10px;
         }
 
         .button {
             background: #e74c3c;
             color: white;
-            padding: 12px 20px;
+            padding: 12px 15px;
             border-radius: 10px;
-            font-size: 0.9em;
+            font-size: 0.8em;
             font-weight: bold;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            text-align: center;
+            flex: 1;
         }
 
         .button.rth {
@@ -193,20 +244,13 @@
             background: #3498db;
         }
 
-        .drone-visual {
-            width: 100%;
-            max-width: 300px;
-            margin: 0 auto;
-            position: relative;
-        }
-
         .drone {
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
             background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
-            border-radius: 20px;
+            border-radius: 15px;
             position: relative;
-            margin: 50px auto;
+            margin: 40px auto;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
@@ -216,12 +260,12 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 3em;
+            font-size: 2.5em;
         }
 
         .propeller {
-            width: 40px;
-            height: 40px;
+            width: 35px;
+            height: 35px;
             background: rgba(78, 205, 196, 0.6);
             border-radius: 50%;
             position: absolute;
@@ -233,139 +277,94 @@
             to { transform: rotate(360deg); }
         }
 
-        .propeller.tl { top: -15px; left: -15px; }
-        .propeller.tr { top: -15px; right: -15px; }
-        .propeller.bl { bottom: -15px; left: -15px; }
-        .propeller.br { bottom: -15px; right: -15px; }
+        .propeller.tl { top: -12px; left: -12px; }
+        .propeller.tr { top: -12px; right: -12px; }
+        .propeller.bl { bottom: -12px; left: -12px; }
+        .propeller.br { bottom: -12px; right: -12px; }
 
-        .movement-arrow {
-            font-size: 3em;
+        .movement-indicator {
+            text-align: center;
+            font-size: 2.5em;
             color: #4ecdc4;
-            position: absolute;
-            animation: move 2s infinite;
-        }
-
-        @keyframes move {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
-
-        .movement-arrow.forward { top: -60px; left: 50%; transform: translateX(-50%); }
-        .movement-arrow.up { top: -80px; left: 50%; transform: translateX(-50%) rotate(-90deg); }
-        .movement-arrow.rotate { top: 50%; right: -60px; transform: translateY(-50%); }
-
-        .next-btn {
-            background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
-            color: white;
-            border: none;
-            padding: 18px 40px;
-            border-radius: 50px;
-            font-size: 1.3em;
+            margin: 20px 0;
             font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 20px;
-            box-shadow: 0 5px 20px rgba(78, 205, 196, 0.4);
-            transition: all 0.3s;
         }
 
-        .next-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(78, 205, 196, 0.6);
-        }
-
-        .progress-dots {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.3);
-            transition: all 0.3s;
-        }
-
-        .dot.active {
-            background: white;
-            transform: scale(1.3);
-        }
-
-        .hidden {
-            display: none;
+        .instruction {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: #2e7d32;
         }
 
         .warning {
             background: #fff3cd;
             border-left: 4px solid #ffc107;
-            padding: 15px;
+            padding: 20px;
             border-radius: 10px;
-            margin: 15px 0;
+            margin: 20px 0;
+            font-size: 1em;
+            line-height: 1.6;
             color: #856404;
         }
 
         .tip {
-            background: #d1ecf1;
-            border-left: 4px solid #17a2b8;
-            padding: 15px;
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 20px;
             border-radius: 10px;
-            margin: 15px 0;
-            color: #0c5460;
+            margin: 20px 0;
+            font-size: 1em;
+            line-height: 1.6;
+            color: #1565c0;
         }
 
         .ground {
-            height: 20px;
+            height: 15px;
             background: linear-gradient(to bottom, #95a5a6, #7f8c8d);
             border-radius: 10px;
-            margin-top: 20px;
             position: relative;
         }
 
         .ground::after {
             content: '🌱🌿🌱';
             position: absolute;
-            top: -15px;
+            top: -12px;
             left: 50%;
             transform: translateX(-50%);
+            font-size: 0.9em;
         }
 
-        .height-indicator {
-            text-align: center;
-            font-size: 1.5em;
-            color: #4ecdc4;
-            font-weight: bold;
-            margin: 10px 0;
-        }
-
-        .finish-screen {
-            text-align: center;
-            padding: 40px 20px;
-        }
-
-        .finish-screen h2 {
-            font-size: 2.5em;
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        .finish-screen .emoji {
-            font-size: 5em;
-            margin: 20px 0;
-        }
-
-        .restart-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .safety-box {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
             color: white;
-            border: none;
-            padding: 18px 40px;
-            border-radius: 50px;
-            font-size: 1.2em;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 20px;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 15px 0;
+        }
+
+        .safety-box h3 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .safety-box p {
+            opacity: 0.95;
+            line-height: 1.6;
+            font-size: 1.05em;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -373,35 +372,58 @@
     <div class="container">
         <div class="header">
             <h1>🚁 DJI Mini 4K</h1>
-            <p>5 Minuten Crash Course</p>
+            <p>Kies wat je wilt leren</p>
         </div>
 
-        <div class="timer" id="timer">5:00</div>
-
-        <div class="progress-dots" id="progressDots"></div>
-
-        <div id="stepsContainer"></div>
-
-        <div class="card hidden" id="finishCard">
-            <div class="finish-screen">
-                <div class="emoji">🎉</div>
-                <h2>Gefeliciteerd!</h2>
-                <p style="font-size: 1.2em; color: #666; margin: 20px 0;">Je kent nu de basics van de DJI Mini 4K!</p>
-                <p style="color: #999;">Tijd om te gaan vliegen! Begin rustig en houd afstand van obstakels.</p>
-                <button class="restart-btn" onclick="location.reload()">↻ Opnieuw doorlopen</button>
+        <!-- Main Menu -->
+        <div id="mainMenu" class="menu">
+            <div class="menu-item" onclick="showDetail('controller')">
+                <div class="icon">🎮</div>
+                <div class="title">De Controller</div>
+            </div>
+            <div class="menu-item" onclick="showDetail('takeoff')">
+                <div class="icon">⬆️</div>
+                <div class="title">Opstijgen</div>
+            </div>
+            <div class="menu-item" onclick="showDetail('forward')">
+                <div class="icon">➡️</div>
+                <div class="title">Vooruit</div>
+            </div>
+            <div class="menu-item" onclick="showDetail('sideways')">
+                <div class="icon">↔️</div>
+                <div class="title">Zijwaarts</div>
+            </div>
+            <div class="menu-item" onclick="showDetail('rotate')">
+                <div class="icon">↻</div>
+                <div class="title">Draaien</div>
+            </div>
+            <div class="menu-item" onclick="showDetail('landing')">
+                <div class="icon">⬇️</div>
+                <div class="title">Landen</div>
+            </div>
+            <div class="menu-item" onclick="showDetail('emergency')">
+                <div class="icon">🆘</div>
+                <div class="title">Noodknoppen</div>
+            </div>
+            <div class="menu-item" onclick="showDetail('safety')">
+                <div class="icon">⚠️</div>
+                <div class="title">Veiligheid</div>
             </div>
         </div>
+
+        <!-- Detail Views -->
+        <div id="detailContainer"></div>
     </div>
 
     <script>
-        const steps = [
-            {
-                title: "De Controller",
-                description: "Dit is je afstandsbediening. Je hebt 2 sticks en 3 belangrijke knoppen.",
-                visual: 'controller',
-                content: `
-                    <div class="visual">
-                        <div class="controller">
+        const content = {
+            controller: {
+                title: "🎮 De Controller",
+                html: `
+                    <div class="card">
+                        <h2 class="detail-title">De Controller</h2>
+                        
+                        <div class="visual-box">
                             <div class="controller-body">
                                 <div class="stick-area">
                                     <div class="stick">
@@ -409,85 +431,96 @@
                                             <div class="stick-knob"></div>
                                         </div>
                                         <div class="stick-label">LINKER STICK</div>
-                                        <div style="text-align: center; color: white; font-size: 0.8em; margin-top: 5px;">
-                                            ↕️ Hoogte<br>↔️ Draaien
-                                        </div>
+                                        <div class="stick-desc">↕️ Hoogte<br>↔️ Draaien</div>
                                     </div>
                                     <div class="stick">
                                         <div class="stick-base">
                                             <div class="stick-knob"></div>
                                         </div>
                                         <div class="stick-label">RECHTER STICK</div>
-                                        <div style="text-align: center; color: white; font-size: 0.8em; margin-top: 5px;">
-                                            ↕️ Voor/Achter<br>↔️ Links/Rechts
-                                        </div>
+                                        <div class="stick-desc">↕️ Voor/Achter<br>↔️ Links/Rechts</div>
                                     </div>
                                 </div>
                                 <div class="buttons-area">
-                                    <div class="button rth">RTH<br><span style="font-size: 0.7em;">Kom terug</span></div>
-                                    <div class="button pause">⏸<br><span style="font-size: 0.7em;">Pauzeer</span></div>
-                                    <div class="button">📸<br><span style="font-size: 0.7em;">Foto/Video</span></div>
+                                    <div class="button rth">RTH<br>🏠</div>
+                                    <div class="button pause">PAUSE<br>⏸</div>
+                                    <div class="button">FOTO<br>📸</div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="tip">
-                        💡 <strong>Onthoud:</strong> Kleine bewegingen zijn genoeg! De drone is heel gevoelig.
+
+                        <div class="instruction">
+                            <strong>Linker stick:</strong> Omhoog/omlaag voor hoogte, links/rechts om te draaien<br><br>
+                            <strong>Rechter stick:</strong> Omhoog/omlaag voor voor/achteruit, links/rechts om zijwaarts te vliegen
+                        </div>
+
+                        <div class="tip">
+                            💡 Kleine bewegingen zijn genoeg! De drone is super gevoelig.
+                        </div>
                     </div>
                 `
             },
-            {
-                title: "Opstijgen",
-                description: "Trek de linker stick voorzichtig naar boven om op te stijgen naar 1,5 meter hoogte.",
-                visual: 'takeoff',
-                content: `
-                    <div class="visual">
-                        <div class="controller-body" style="max-width: 250px; margin: 0 auto; padding: 30px 20px;">
-                            <div class="stick">
-                                <div class="stick-base">
-                                    <div class="stick-knob"></div>
-                                    <div class="arrow up">⬆️</div>
+            takeoff: {
+                title: "⬆️ Opstijgen",
+                html: `
+                    <div class="card">
+                        <h2 class="detail-title">Opstijgen</h2>
+                        
+                        <div class="visual-box">
+                            <div class="controller-body" style="max-width: 200px; padding: 25px;">
+                                <div class="stick">
+                                    <div class="stick-base">
+                                        <div class="stick-knob"></div>
+                                        <div class="arrow up">⬆️</div>
+                                    </div>
+                                    <div class="stick-label">LINKER STICK</div>
                                 </div>
-                                <div class="stick-label">LINKER STICK OMHOOG</div>
                             </div>
-                        </div>
-                        <div style="margin-top: 30px;">
-                            <div class="drone-visual">
-                                <div class="movement-arrow up">⬆️</div>
+                            
+                            <div style="margin-top: 30px;">
+                                <div class="movement-indicator">⬆️</div>
                                 <div class="drone">
                                     <div class="propeller tl"></div>
                                     <div class="propeller tr"></div>
                                     <div class="propeller bl"></div>
                                     <div class="propeller br"></div>
                                 </div>
-                                <div class="height-indicator">1,5 meter</div>
+                                <div style="text-align: center; color: #4ecdc4; font-size: 1.3em; font-weight: bold; margin: 15px 0;">
+                                    1,5 meter hoogte
+                                </div>
                                 <div class="ground"></div>
                             </div>
                         </div>
-                    </div>
-                    <div class="warning">
-                        ⚠️ Ga langzaam! Trek de stick niet helemaal omhoog, halverwege is genoeg.
+
+                        <div class="instruction">
+                            Trek de <strong>linker stick voorzichtig naar boven</strong> om op te stijgen naar ongeveer 1,5 meter hoogte.
+                        </div>
+
+                        <div class="warning">
+                            ⚠️ Ga langzaam! Trek de stick niet helemaal omhoog, halverwege is al genoeg.
+                        </div>
                     </div>
                 `
             },
-            {
-                title: "Vooruit Vliegen",
-                description: "Duw de rechter stick naar voren om de drone vooruit te laten vliegen.",
-                visual: 'forward',
-                content: `
-                    <div class="visual">
-                        <div class="controller-body" style="max-width: 250px; margin: 0 auto; padding: 30px 20px;">
-                            <div class="stick">
-                                <div class="stick-base">
-                                    <div class="stick-knob"></div>
-                                    <div class="arrow up">⬆️</div>
+            forward: {
+                title: "➡️ Vooruit Vliegen",
+                html: `
+                    <div class="card">
+                        <h2 class="detail-title">Vooruit Vliegen</h2>
+                        
+                        <div class="visual-box">
+                            <div class="controller-body" style="max-width: 200px; padding: 25px;">
+                                <div class="stick">
+                                    <div class="stick-base">
+                                        <div class="stick-knob"></div>
+                                        <div class="arrow up">⬆️</div>
+                                    </div>
+                                    <div class="stick-label">RECHTER STICK</div>
                                 </div>
-                                <div class="stick-label">RECHTER STICK VOORUIT</div>
                             </div>
-                        </div>
-                        <div style="margin-top: 30px;">
-                            <div class="drone-visual">
-                                <div class="movement-arrow forward">➡️</div>
+                            
+                            <div style="margin-top: 30px;">
+                                <div class="movement-indicator">➡️</div>
                                 <div class="drone">
                                     <div class="propeller tl"></div>
                                     <div class="propeller tr"></div>
@@ -497,60 +530,74 @@
                                 <div class="ground"></div>
                             </div>
                         </div>
-                    </div>
-                    <div class="tip">
-                        💡 <strong>Tip:</strong> Laat de stick los en de drone stopt automatisch en blijft zweven!
+
+                        <div class="instruction">
+                            Duw de <strong>rechter stick naar voren</strong> om de drone vooruit te laten vliegen.
+                        </div>
+
+                        <div class="tip">
+                            💡 Laat de stick los en de drone stopt automatisch en blijft zweven!
+                        </div>
                     </div>
                 `
             },
-            {
-                title: "Zijwaarts Vliegen",
-                description: "Beweeg de rechter stick naar links of rechts om zijwaarts te vliegen.",
-                visual: 'sideways',
-                content: `
-                    <div class="visual">
-                        <div class="controller-body" style="max-width: 250px; margin: 0 auto; padding: 30px 20px;">
-                            <div class="stick">
-                                <div class="stick-base">
-                                    <div class="stick-knob"></div>
-                                    <div class="arrow left">⬅️</div>
-                                    <div class="arrow right">➡️</div>
+            sideways: {
+                title: "↔️ Zijwaarts Vliegen",
+                html: `
+                    <div class="card">
+                        <h2 class="detail-title">Zijwaarts Vliegen</h2>
+                        
+                        <div class="visual-box">
+                            <div class="controller-body" style="max-width: 200px; padding: 25px;">
+                                <div class="stick">
+                                    <div class="stick-base">
+                                        <div class="stick-knob"></div>
+                                        <div class="arrow left">⬅️</div>
+                                        <div class="arrow right">➡️</div>
+                                    </div>
+                                    <div class="stick-label">RECHTER STICK</div>
                                 </div>
-                                <div class="stick-label">RECHTER STICK LINKS/RECHTS</div>
+                            </div>
+                            
+                            <div style="margin-top: 30px; text-align: center;">
+                                <div style="font-size: 3em; margin: 30px 0;">
+                                    ⬅️ 🚁 ➡️
+                                </div>
+                                <div style="color: #666; font-size: 1.2em; font-weight: 500;">
+                                    De drone vliegt zijwaarts<br>zonder te draaien
+                                </div>
                             </div>
                         </div>
-                        <div style="margin-top: 30px; text-align: center;">
-                            <div style="font-size: 3em; margin: 20px 0;">
-                                ⬅️ 🚁 ➡️
-                            </div>
-                            <div style="color: #666; font-size: 1.1em;">
-                                De drone vliegt zijwaarts zonder te draaien
-                            </div>
+
+                        <div class="instruction">
+                            Beweeg de <strong>rechter stick naar links of rechts</strong> om zijwaarts te vliegen.
                         </div>
-                    </div>
-                    <div class="tip">
-                        💡 <strong>Probeer:</strong> Vlieg een vierkant: vooruit → rechts → achteruit → links
+
+                        <div class="tip">
+                            💡 Probeer een vierkant te vliegen: vooruit → rechts → achteruit → links
+                        </div>
                     </div>
                 `
             },
-            {
-                title: "Draaien (Roteren)",
-                description: "Beweeg de linker stick naar links/rechts om de drone te laten draaien.",
-                visual: 'rotate',
-                content: `
-                    <div class="visual">
-                        <div class="controller-body" style="max-width: 250px; margin: 0 auto; padding: 30px 20px;">
-                            <div class="stick">
-                                <div class="stick-base">
-                                    <div class="stick-knob"></div>
-                                    <div class="arrow left">⬅️</div>
-                                    <div class="arrow right">➡️</div>
+            rotate: {
+                title: "↻ Draaien",
+                html: `
+                    <div class="card">
+                        <h2 class="detail-title">Draaien (Roteren)</h2>
+                        
+                        <div class="visual-box">
+                            <div class="controller-body" style="max-width: 200px; padding: 25px;">
+                                <div class="stick">
+                                    <div class="stick-base">
+                                        <div class="stick-knob"></div>
+                                        <div class="arrow left">⬅️</div>
+                                        <div class="arrow right">➡️</div>
+                                    </div>
+                                    <div class="stick-label">LINKER STICK</div>
                                 </div>
-                                <div class="stick-label">LINKER STICK LINKS/RECHTS</div>
                             </div>
-                        </div>
-                        <div style="margin-top: 30px;">
-                            <div class="drone-visual">
+                            
+                            <div style="margin-top: 30px;">
                                 <div class="drone" style="animation: rotate 3s linear infinite;">
                                     <div class="propeller tl"></div>
                                     <div class="propeller tr"></div>
@@ -558,39 +605,39 @@
                                     <div class="propeller br"></div>
                                 </div>
                                 <div style="text-align: center; margin-top: 20px; color: #4ecdc4; font-size: 1.3em; font-weight: bold;">
-                                    ↻ De drone draait op zijn plek
+                                    ↻ Draait op zijn plek
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <style>
-                        @keyframes rotate {
-                            from { transform: rotate(0deg); }
-                            to { transform: rotate(360deg); }
-                        }
-                    </style>
-                    <div class="warning">
-                        ⚠️ Dit is even wennen! Begin met kleine draaiingen.
+
+                        <div class="instruction">
+                            Beweeg de <strong>linker stick naar links of rechts</strong> om de drone te laten draaien.
+                        </div>
+
+                        <div class="warning">
+                            ⚠️ Dit is even wennen! Begin met kleine draaiingen en bouw het langzaam op.
+                        </div>
                     </div>
                 `
             },
-            {
-                title: "Landen",
-                description: "Trek de linker stick langzaam naar beneden om te landen. Ga rustig!",
-                visual: 'landing',
-                content: `
-                    <div class="visual">
-                        <div class="controller-body" style="max-width: 250px; margin: 0 auto; padding: 30px 20px;">
-                            <div class="stick">
-                                <div class="stick-base">
-                                    <div class="stick-knob"></div>
-                                    <div class="arrow down">⬇️</div>
+            landing: {
+                title: "⬇️ Landen",
+                html: `
+                    <div class="card">
+                        <h2 class="detail-title">Landen</h2>
+                        
+                        <div class="visual-box">
+                            <div class="controller-body" style="max-width: 200px; padding: 25px;">
+                                <div class="stick">
+                                    <div class="stick-base">
+                                        <div class="stick-knob"></div>
+                                        <div class="arrow down">⬇️</div>
+                                    </div>
+                                    <div class="stick-label">LINKER STICK</div>
                                 </div>
-                                <div class="stick-label">LINKER STICK OMLAAG</div>
                             </div>
-                        </div>
-                        <div style="margin-top: 30px;">
-                            <div class="drone-visual">
+                            
+                            <div style="margin-top: 30px;">
                                 <div class="drone" style="margin-top: 20px;">
                                     <div class="propeller tl" style="animation-duration: 2s;"></div>
                                     <div class="propeller tr" style="animation-duration: 2s;"></div>
@@ -603,130 +650,99 @@
                                 <div class="ground"></div>
                             </div>
                         </div>
-                    </div>
-                    <div class="warning">
-                        ⚠️ <strong>Belangrijk:</strong> Land langzaam en op een vlakke ondergrond. Geen gras of zand!
+
+                        <div class="instruction">
+                            Trek de <strong>linker stick langzaam naar beneden</strong> om te landen.
+                        </div>
+
+                        <div class="warning">
+                            ⚠️ Land langzaam op een vlakke ondergrond. Geen gras of zand!
+                        </div>
                     </div>
                 `
             },
-            {
-                title: "Noodknoppen",
-                description: "Raak in paniek? Druk op PAUSE of RTH!",
-                visual: 'emergency',
-                content: `
-                    <div class="visual">
+            emergency: {
+                title: "🆘 Noodknoppen",
+                html: `
+                    <div class="card">
+                        <h2 class="detail-title">Noodknoppen</h2>
+                        
                         <div style="text-align: center; padding: 20px;">
-                            <div style="font-size: 4em; margin: 20px 0;">⏸️</div>
-                            <h3 style="color: #3498db; font-size: 1.5em; margin-bottom: 10px;">PAUSE Knop</h3>
-                            <p style="color: #666; font-size: 1.1em; line-height: 1.6;">
-                                Drone stopt DIRECT en blijft zweven op de plek waar hij is.
+                            <div style="font-size: 5em; margin: 20px 0;">⏸️</div>
+                            <h3 style="color: #3498db; font-size: 1.8em; margin-bottom: 15px;">PAUSE</h3>
+                            <p style="color: #666; font-size: 1.2em; line-height: 1.7;">
+                                Drone stopt DIRECT en<br>blijft zweven op de plek
                             </p>
                         </div>
-                        <div style="height: 2px; background: #ddd; margin: 20px 0;"></div>
+
+                        <div style="height: 3px; background: #ddd; margin: 30px 0;"></div>
+
                         <div style="text-align: center; padding: 20px;">
-                            <div style="font-size: 4em; margin: 20px 0;">🏠</div>
-                            <h3 style="color: #f39c12; font-size: 1.5em; margin-bottom: 10px;">RTH (Return To Home)</h3>
-                            <p style="color: #666; font-size: 1.1em; line-height: 1.6;">
-                                Drone vliegt automatisch terug naar waar je opstijgt bent.
+                            <div style="font-size: 5em; margin: 20px 0;">🏠</div>
+                            <h3 style="color: #f39c12; font-size: 1.8em; margin-bottom: 15px;">RTH</h3>
+                            <p style="color: #666; font-size: 1.2em; line-height: 1.7;">
+                                Return To Home<br>
+                                Vliegt automatisch terug<br>naar startpunt
                             </p>
                         </div>
-                    </div>
-                    <div class="tip">
-                        💡 <strong>Gouden regel:</strong> Bij twijfel → druk op PAUSE. Adem in, denk na, vlieg verder.
+
+                        <div class="tip">
+                            💡 <strong>Gouden regel:</strong> Bij twijfel → druk op PAUSE. Adem in, denk na, vlieg verder.
+                        </div>
                     </div>
                 `
             },
-            {
-                title: "Veiligheidsregels",
-                description: "3 belangrijke regels om ALTIJD te onthouden:",
-                visual: 'safety',
-                content: `
-                    <div style="padding: 20px 0;">
-                        <div style="background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; padding: 25px; border-radius: 15px; margin-bottom: 15px;">
-                            <div style="font-size: 2.5em; margin-bottom: 10px;">👀</div>
-                            <h3 style="font-size: 1.4em; margin-bottom: 10px;">1. Houd de drone altijd in zicht</h3>
-                            <p style="opacity: 0.9;">Vlieg NOOIT verder dan je kunt zien!</p>
-                        </div>
+            safety: {
+                title: "⚠️ Veiligheid",
+                html: `
+                    <div class="card">
+                        <h2 class="detail-title">Veiligheidsregels</h2>
                         
-                        <div style="background: linear-gradient(135deg, #f39c12, #e67e22); color: white; padding: 25px; border-radius: 15px; margin-bottom: 15px;">
-                            <div style="font-size: 2.5em; margin-bottom: 10px;">👥</div>
-                            <h3 style="font-size: 1.4em; margin-bottom: 10px;">2. Blijf weg van mensen</h3>
-                            <p style="opacity: 0.9;">Minimaal 10 meter afstand van anderen!</p>
+                        <div class="safety-box">
+                            <div style="font-size: 3em; margin-bottom: 15px;">👀</div>
+                            <h3>1. Houd de drone in zicht</h3>
+                            <p>Vlieg NOOIT verder dan je kunt zien!</p>
                         </div>
-                        
-                        <div style="background: linear-gradient(135deg, #3498db, #2980b9); color: white; padding: 25px; border-radius: 15px;">
-                            <div style="font-size: 2.5em; margin-bottom: 10px;">🌧️</div>
-                            <h3 style="font-size: 1.4em; margin-bottom: 10px;">3. Check het weer</h3>
-                            <p style="opacity: 0.9;">Geen regen, geen harde wind (check de app!)</p>
+
+                        <div class="safety-box">
+                            <div style="font-size: 3em; margin-bottom: 15px;">👥</div>
+                            <h3>2. Blijf weg van mensen</h3>
+                            <p>Minimaal 10 meter afstand van anderen!</p>
+                        </div>
+
+                        <div class="safety-box">
+                            <div style="font-size: 3em; margin-bottom: 15px;">🌧️</div>
+                            <h3>3. Check het weer</h3>
+                            <p>Geen regen en geen harde wind!</p>
+                        </div>
+
+                        <div class="safety-box">
+                            <div style="font-size: 3em; margin-bottom: 15px;">🏢</div>
+                            <h3>4. Let op obstakels</h3>
+                            <p>Geen bomen, gebouwen of palen in de buurt!</p>
                         </div>
                     </div>
                 `
             }
-        ];
+        };
 
-        let currentStep = 0;
-        let timeLeft = 300; // 5 minutes in seconds
-        let timerInterval;
-
-        function renderSteps() {
-            const container = document.getElementById('stepsContainer');
-            const progressDots = document.getElementById('progressDots');
-            
-            // Create progress dots
-            progressDots.innerHTML = steps.map((_, i) => 
-                `<div class="dot ${i === currentStep ? 'active' : ''}"></div>`
-            ).join('');
-
-            // Render current step
+        function showDetail(type) {
+            document.getElementById('mainMenu').classList.add('hidden');
+            const container = document.getElementById('detailContainer');
             container.innerHTML = `
-                <div class="card">
-                    <div class="step-counter">${currentStep + 1}</div>
-                    <h2 class="step-title">${steps[currentStep].title}</h2>
-                    <p class="step-desc">${steps[currentStep].description}</p>
-                    ${steps[currentStep].content}
-                    <button class="next-btn" onclick="nextStep()">
-                        ${currentStep < steps.length - 1 ? 'Volgende →' : 'Afronden! 🎉'}
-                    </button>
+                <button class="back-btn" onclick="goBack()">← Terug</button>
+                <div class="detail-view active">
+                    ${content[type].html}
                 </div>
             `;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function nextStep() {
-            if (currentStep < steps.length - 1) {
-                currentStep++;
-                renderSteps();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            } else {
-                finish();
-            }
+        function goBack() {
+            document.getElementById('mainMenu').classList.remove('hidden');
+            document.getElementById('detailContainer').innerHTML = '';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-
-        function finish() {
-            clearInterval(timerInterval);
-            document.getElementById('stepsContainer').classList.add('hidden');
-            document.getElementById('progressDots').classList.add('hidden');
-            document.getElementById('timer').classList.add('hidden');
-            document.getElementById('finishCard').classList.remove('hidden');
-        }
-
-        function updateTimer() {
-            const minutes = Math.floor(timeLeft / 60);
-            const seconds = timeLeft % 60;
-            document.getElementById('timer').textContent = 
-                `${minutes}:${seconds.toString().padStart(2, '0')}`;
-            
-            if (timeLeft > 0) {
-                timeLeft--;
-            } else {
-                clearInterval(timerInterval);
-            }
-        }
-
-        // Start timer
-        timerInterval = setInterval(updateTimer, 1000);
-
-        // Initial render
-        renderSteps();
     </script>
 </body>
 </html>
